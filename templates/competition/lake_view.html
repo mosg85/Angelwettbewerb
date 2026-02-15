@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Gesamtansicht – {{ comp.name }}{% endblock %}
+{% block content %}
+<div class="glass-card p-8">
+    <h1 class="text-3xl mb-4">{{ comp.name }} – Gesamtansicht</h1>
+    <p class="mb-4">Runde {{ current_round.round_num if current_round else '?' }}</p>
+    <a href="javascript:history.back()" class="btn btn-secondary mb-6">← Zurück</a>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for place in places %}
+        {# Определяем статус подтверждения для каждого участника #}
+        {% set left_res = results_dict.get((place.id, place.left_user_id)) if place.left_user_id else None %}
+        {% set right_res = results_dict.get((place.id, place.right_user_id)) if place.right_user_id else None %}
+        
+        {% if (place.left_user_id and left_res and left_res.confirmed) or not place.left_user_id %}
+            {% set left_confirmed = true %}
+        {% else %}
+            {% set left_confirmed = false %}
+        {% endif %}
+        {% if (place.right_user_id and right_res and right_res.confirmed) or not place.right_user_id %}
+            {% set right_confirmed = true %}
+        {% else %}
+            {% set right_confirmed = false %}
+        {% endif %}
+        {% set both_confirmed = left_confirmed and right_confirmed %}
+        {% set any_not_confirmed = not left_confirmed or not right_confirmed %}
+        
+        {# Цвет фона в зависимости от статуса #}
+        {% if both_confirmed %}
+        <div class="glass-card p-4 text-center" style="background-color: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4);">
+        {% elif any_not_confirmed %}
+        <div class="glass-card p-4 text-center" style="background-color: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4);">
+        {% else %}
+        <div class="glass-card p-4 text-center">
+        {% endif %}
+            <h3 class="text-xl mb-2">Platz {{ place.place_num }}</h3>
+            <div class="flex justify-around items-center">
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='uploads/' + (place.left_user.photo_path if place.left_user else 'default_avatar.png')) }}" class="w-16 h-16 rounded-full mx-auto mb-1">
+                    <span class="text-sm">{{ place.left_user.full_name() if place.left_user else 'Frei' }}</span>
+                    {% if left_res %}
+                    <div class="text-xs mt-1 {% if left_res.confirmed %}text-green-300{% else %}text-red-300{% endif %}">
+                        Fische: {{ left_res.fish_count }}
+                    </div>
+                    {% endif %}
+                </div>
+                <span class="text-2xl mx-2">vs</span>
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='uploads/' + (place.right_user.photo_path if place.right_user else 'default_avatar.png')) }}" class="w-16 h-16 rounded-full mx-auto mb-1">
+                    <span class="text-sm">{{ place.right_user.full_name() if place.right_user else 'Frei' }}</span>
+                    {% if right_res %}
+                    <div class="text-xs mt-1 {% if right_res.confirmed %}text-green-300{% else %}text-red-300{% endif %}">
+                        Fische: {{ right_res.fish_count }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if current_user.is_admin %}
+            <div class="mt-4">
+                <a href="{{ url_for("admin.edit_place", place_id=place.id) }}" class="btn btn-primary text-sm inline-flex items-center"><i class="fas fa-edit mr-1"></i> Ergebnisse bearbeiten</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

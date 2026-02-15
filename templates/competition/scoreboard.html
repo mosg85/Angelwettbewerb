@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Rangliste - {{ comp.name }}{% endblock %}
+{% block content %}
+<div class="glass-card p-8">
+    <h1 class="text-3xl mb-4">{{ comp.name }} – Rangliste</h1>
+    <a href="javascript:history.back()" class="btn btn-secondary mb-4">← Zurück</a>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white/10 rounded-lg">
+            <thead>
+                <tr class="border-b border-white/20">
+                    <th class="p-3 text-left">Platz</th>
+                    <th class="p-3 text-left">Teilnehmer</th>
+                    <th class="p-3 text-left">Gesamtpunkte</th>
+                    {% if current_user.is_admin %}
+                    <th class="p-3 text-left">Aktionen</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in scoreboard %}
+                <tr class="border-b border-white/10 hover:bg-white/5">
+                    <td class="p-3">{{ loop.index }}</td>
+                    <td class="p-3">{{ entry.user.full_name() }}</td>
+                    <td class="p-3 font-bold">{{ entry.total_points }}</td>
+                    {% if current_user.is_admin %}
+                    <td class="p-3">
+                        <a href="{{ url_for('admin.edit_user_results', comp_id=comp.id, user_id=entry.user.id) }}" class="btn btn-secondary text-sm">Punkte bearbeiten</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

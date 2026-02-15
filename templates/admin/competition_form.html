@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Neuen Wettbewerb erstellen{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8 max-w-3xl mx-auto">
+    <div class="flex items-center mb-6">
+        <i class="fas fa-trophy text-3xl text-yellow-400 mr-3"></i>
+        <h1 class="text-2xl sm:text-3xl font-bold">Neuen Wettbewerb erstellen</h1>
+    </div>
+    
+    <form method="post" class="space-y-5">
+        {{ form.hidden_tag() }}
+        
+        <!-- Name -->
+        <div class="bg-white/5 p-4 rounded-lg">
+            <label class="block mb-2 text-lg font-semibold flex items-center">
+                <i class="fas fa-tag text-yellow-400 mr-2 w-5"></i>
+                {{ form.name.label }}
+            </label>
+            {{ form.name(class="form-input", placeholder="z.B. Sommercup 2026") }}
+            {% if form.name.errors %}
+                <div class="text-red-300 text-sm mt-1">
+                    {% for error in form.name.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Zeit & Ort (2 Spalten) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white/5 p-4 rounded-lg">
+                <label class="block mb-2 text-lg font-semibold flex items-center">
+                    <i class="far fa-calendar-alt text-blue-400 mr-2 w-5"></i>
+                    {{ form.zeit.label }}
+                </label>
+                {{ form.zeit(class="form-input", placeholder="2026-06-01 14:00") }}
+                {% if form.zeit.errors %}
+                    <div class="text-red-300 text-sm mt-1">
+                        {% for error in form.zeit.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <p class="text-xs text-gray-400 mt-1">Format: JJJJ-MM-TT HH:MM</p>
+            </div>
+            
+            <div class="bg-white/5 p-4 rounded-lg">
+                <label class="block mb-2 text-lg font-semibold flex items-center">
+                    <i class="fas fa-map-marker-alt text-red-400 mr-2 w-5"></i>
+                    {{ form.ort.label }}
+                </label>
+                {{ form.ort(class="form-input", placeholder="z.B. Waldsee") }}
+                {% if form.ort.errors %}
+                    <div class="text-red-300 text-sm mt-1">
+                        {% for error in form.ort.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Plätze & Teilnehmer (2 Spalten) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white/5 p-4 rounded-lg">
+                <label class="block mb-2 text-lg font-semibold flex items-center">
+                    <i class="fas fa-chair text-green-400 mr-2 w-5"></i>
+                    {{ form.plaetze.label }}
+                </label>
+                {{ form.plaetze(class="form-input", min=2, max=50) }}
+                {% if form.plaetze.errors %}
+                    <div class="text-red-300 text-sm mt-1">
+                        {% for error in form.plaetze.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <p class="text-xs text-gray-400 mt-1">Anzahl der Angelplätze (2-50)</p>
+            </div>
+            
+            <div class="bg-white/5 p-4 rounded-lg">
+                <label class="block mb-2 text-lg font-semibold flex items-center">
+                    <i class="fas fa-users text-purple-400 mr-2 w-5"></i>
+                    {{ form.max_teilnehmer.label }}
+                </label>
+                {{ form.max_teilnehmer(class="form-input", min=2) }}
+                {% if form.max_teilnehmer.errors %}
+                    <div class="text-red-300 text-sm mt-1">
+                        {% for error in form.max_teilnehmer.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <p class="text-xs text-gray-400 mt-1">Muss gerade sein und 2 × Plätze ergeben</p>
+            </div>
+        </div>
+        
+        <!-- Beschreibung -->
+        <div class="bg-white/5 p-4 rounded-lg">
+            <label class="block mb-2 text-lg font-semibold flex items-center">
+                <i class="fas fa-align-left text-indigo-400 mr-2 w-5"></i>
+                {{ form.beschreibung.label }}
+            </label>
+            {{ form.beschreibung(class="form-input h-24", placeholder="Details zum Wettbewerb...") }}
+            {% if form.beschreibung.errors %}
+                <div class="text-red-300 text-sm mt-1">
+                    {% for error in form.beschreibung.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Regeln -->
+        <div class="bg-white/5 p-4 rounded-lg">
+            <label class="block mb-2 text-lg font-semibold flex items-center">
+                <i class="fas fa-gavel text-orange-400 mr-2 w-5"></i>
+                {{ form.regeln.label }}
+            </label>
+            {{ form.regeln(class="form-input h-24", placeholder="Teilnahmebedingungen, Regeln...") }}
+            {% if form.regeln.errors %}
+                <div class="text-red-300 text-sm mt-1">
+                    {% for error in form.regeln.errors %}{{ error }}{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-4">
+            {{ form.submit(class="btn btn-primary flex-1 py-3 text-lg") }}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline flex-1 py-3 text-lg text-center">
+                <i class="fas fa-times mr-2"></i>Abbrechen
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

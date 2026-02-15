@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Startseite{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8 text-center max-w-2xl mx-auto">
+    <!-- Logo/title für mobile optimiert -->
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 break-words">
+        <i class="fas fa-fish mr-2 text-yellow-400"></i>
+        Angelwettbewerb
+    </h1>
+    
+    <!-- See-Icon -->
+    <i class="fas fa-water text-4xl sm:text-6xl mb-4 text-blue-300"></i>
+    
+    <!-- Beschreibung -->
+    <p class="text-base sm:text-lg mb-6 px-2">
+        Verwalte deine Angelwettbewerbe einfach und elegant.
+    </p>
+    
+    <!-- Buttons für Registrierung/Login (besser sichtbar) -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center">
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary text-base sm:text-lg py-3 px-4 sm:px-6 flex-1 sm:flex-none">
+            <i class="fas fa-user-plus mr-2"></i>Registrieren
+        </a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline text-base sm:text-lg py-3 px-4 sm:px-6 flex-1 sm:flex-none">
+            <i class="fas fa-sign-in-alt mr-2"></i>Anmelden
+        </a>
+    </div>
+    
+    <!-- Hinweis für bereits registrierte Benutzer (optional) -->
+    {% if not current_user.is_authenticated %}
+    <p class="text-xs sm:text-sm text-gray-300 mt-4">
+        Bereits registriert? <a href="{{ url_for('auth.login') }}" class="text-yellow-300 hover:underline font-semibold">Hier anmelden</a>
+    </p>
+    {% endif %}
+</div>
+
+<!-- Cookie-Hinweis (deutsch, wie auf deutschen Websites üblich) -->
+<div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 shadow-lg z-50 hidden">
+    <div class="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-sm sm:text-base">
+            <i class="fas fa-cookie-bite text-yellow-400 mr-2"></i>
+            Diese Website verwendet Cookies, um dir den bestmöglichen Service zu bieten. 
+            <a href="/datenschutz" class="text-yellow-300 hover:underline font-semibold">Mehr erfahren</a>
+        </div>
+        <div class="flex gap-2">
+            <button id="accept-cookies" class="btn btn-primary text-sm py-2 px-4">
+                <i class="fas fa-check mr-1"></i>Akzeptieren
+            </button>
+            <button id="decline-cookies" class="btn btn-outline text-sm py-2 px-4">
+                <i class="fas fa-times mr-1"></i>Ablehnen
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cookie-Banner Funktionalität
+document.addEventListener('DOMContentLoaded', function() {
+    const banner = document.getElementById('cookie-banner');
+    const acceptBtn = document.getElementById('accept-cookies');
+    const declineBtn = document.getElementById('decline-cookies');
+    
+    // Prüfen, ob bereits eine Cookie-Einwilligung vorliegt
+    if (!localStorage.getItem('cookiesAccepted') && !localStorage.getItem('cookiesDeclined')) {
+        banner.classList.remove('hidden');
+    }
+    
+    acceptBtn.addEventListener('click', function() {
+        localStorage.setItem('cookiesAccepted', 'true');
+        banner.classList.add('hidden');
+        console.log('Cookies akzeptiert');
+    });
+    
+    declineBtn.addEventListener('click', function() {
+        localStorage.setItem('cookiesDeclined', 'true');
+        banner.classList.add('hidden');
+        console.log('Cookies abgelehnt');
+    });
+});
+</script>
+{% endblock %}

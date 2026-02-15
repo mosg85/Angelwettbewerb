@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Registrieren{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8 max-w-md mx-auto">
+    <h2 class="text-xl sm:text-2xl mb-4 text-center font-bold">Registrieren</h2>
+    <form method="post" class="space-y-3">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.vorname.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.vorname(class="form-input w-full", placeholder="Max") }}
+        </div>
+        <div>
+            {{ form.nachname.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.nachname(class="form-input w-full", placeholder="Mustermann") }}
+        </div>
+        <div>
+            {{ form.telefon.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.telefon(class="form-input w-full", placeholder="+491761234567") }}
+        </div>
+        <div>
+            {{ form.email.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.email(class="form-input w-full", placeholder="max@example.com") }}
+        </div>
+        <div>
+            {{ form.password.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.password(class="form-input w-full", placeholder="••••••••") }}
+        </div>
+        <div>
+            {{ form.password2.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.password2(class="form-input w-full", placeholder="••••••••") }}
+        </div>
+        {{ form.submit(class="btn btn-primary w-full py-3 font-bold") }}
+    </form>
+    <p class="text-center mt-4 text-sm">
+        Bereits registriert? 
+        <a href="{{ url_for('auth.login') }}" class="text-yellow-300 hover:underline font-semibold">Anmelden</a>
+    </p>
+</div>
+{% endblock %}

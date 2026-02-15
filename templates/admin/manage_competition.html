@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ comp.name }} verwalten{% endblock %}
+{% block content %}
+<div class="glass-card p-8">
+    <h1 class="text-3xl mb-4">{{ comp.name }}</h1>
+    <p><strong>Status:</strong> {{ comp.status }}</p>
+
+    <!-- Детали события (улучшенные) -->
+    <div class="mt-4 p-4 bg-white/10 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="flex items-start">
+            <i class="fas fa-calendar-alt text-blue-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Zeit:</span> {{ comp.zeit.strftime('%d.%m.%Y %H:%M') if comp.zeit else 'nicht angegeben' }}</div>
+        </div>
+        <div class="flex items-start">
+            <i class="fas fa-map-marker-alt text-red-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Ort:</span> {{ comp.ort }}</div>
+        </div>
+        <div class="flex items-start">
+            <i class="fas fa-chair text-green-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Plätze:</span> {{ comp.plaetze }}</div>
+        </div>
+        <div class="flex items-start">
+            <i class="fas fa-users text-yellow-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Max. Teilnehmer:</span> {{ comp.max_teilnehmer }}</div>
+        </div>
+        {% if comp.beschreibung %}
+        <div class="flex items-start md:col-span-2">
+            <i class="fas fa-align-left text-purple-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Beschreibung:</span> {{ comp.beschreibung }}</div>
+        </div>
+        {% endif %}
+        {% if comp.regeln %}
+        <div class="flex items-start md:col-span-2">
+            <i class="fas fa-gavel text-orange-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Regeln:</span> {{ comp.regeln }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Вертикальные кнопки (с кнопками управления участниками) -->
+    <div class="mt-6 flex flex-col space-y-3 items-start">
+        {% if comp.status == 'created' %}
+        <a href="{{ url_for('admin.start_competition', comp_id=comp.id) }}" class="btn btn-primary">
+            <i class="fas fa-play mr-2"></i> Wettbewerb starten
+        </a>
+        <a href="{{ url_for('admin.add_participant', comp_id=comp.id) }}" class="btn btn-primary">
+            <i class="fas fa-user-plus mr-2"></i> Teilnehmer hinzufügen
+        </a>
+        {% endif %}
+        <a href="{{ url_for('admin.lake_view', comp_id=comp.id) }}" class="btn btn-secondary">
+            <i class="fas fa-map mr-2"></i> Gesamtansicht
+        </a>
+        <a href="{{ url_for('user.scoreboard', comp_id=comp.id) }}" class="btn btn-primary">
+            <i class="fas fa-trophy mr-2"></i> Rangliste anzeigen
+        </a>
+
+        {% set current_round = comp.rounds|selectattr('started', 'equalto', true)|selectattr('finished', 'equalto', false)|first %}
+        {% if current_round %}
+        <a href="{{ url_for('admin.rotate_round', round_id=current_round.id) }}" class="btn btn-secondary" onclick="return confirm('Nächste Runde wirklich starten?')">
+            <i class="fas fa-forward mr-2"></i> Nächste Runde
+        </a>
+        {% endif %}
+
+        {% if comp.status == 'ongoing' or comp.status == 'started' %}
+        <a href="{{ url_for('admin.finish_competition', comp_id=comp.id) }}" class="btn btn-danger" onclick="return confirm('Event wirklich beenden?')">
+            <i class="fas fa-flag-checkered mr-2"></i> Event beenden
+        </a>
+        {% endif %}
+
+        <form action="{{ url_for('admin.delete_competition', comp_id=comp.id) }}" method="post" onsubmit="return confirm('Wettbewerb wirklich löschen? Alle Daten gehen unwiderruflich verloren!');">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash-alt mr-2"></i> Löschen
+            </button>
+        </form>
+    </div>
+
+    <h2 class="text-3xl font-bold mt-8">Teilnehmer ({{ participants|length }})</h2>
+    <hr class="border-t border-white/20 my-2">
+    <ul class="list-disc pl-5">
+        {% for p in participants %}
+        <li class="flex items-center justify-between">
+            <span>{{ p.user.full_name() }} ({{ p.user.email }})</span>
+            {% if comp.status == 'created' %}
+            <form action="{{ url_for('admin.remove_participant', comp_id=comp.id, user_id=p.user.id) }}" method="post" onsubmit="return confirm('Teilnehmer wirklich entfernen?')">
+                <button type="submit" class="text-red-400 hover:text-red-200 ml-2">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </form>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2 class="text-3xl font-bold mt-8">Runden</h2>
+    <hr class="border-t border-white/20 my-2">
+    {% for r in rounds %}
+        <div class="border-t border-white/20 py-2">
+            <h3 class="text-xl font-semibold text-yellow-300">Runde {{ r.round_num }}</h3>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+                {% for place in r.places %}
+                    <div class="bg-white/10 p-2 rounded">
+                        Platz {{ place.place_num }}: {{ place.left_user.full_name() if place.left_user else 'Frei' }} vs {{ place.right_user.full_name() if place.right_user else 'Frei' }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

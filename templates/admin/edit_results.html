@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Punkte bearbeiten - {{ user.full_name() }}{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-edit text-3xl text-yellow-400 mr-3"></i>
+            <h1 class="text-2xl sm:text-3xl font-bold">Punkte bearbeiten</h1>
+        </div>
+        <a href="{{ url_for('admin.manage_competition', comp_id=comp.id) }}" class="btn btn-outline mt-2 sm:mt-0">
+            <i class="fas fa-arrow-left mr-2"></i>Zurück
+        </a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white/10 p-4 rounded-lg flex items-center">
+            <i class="fas fa-user-circle text-4xl text-blue-400 mr-3"></i>
+            <div>
+                <p class="text-sm text-gray-400">Teilnehmer</p>
+                <p class="text-xl font-bold">{{ user.full_name() }}</p>
+                <p class="text-sm">{{ user.email }}</p>
+            </div>
+        </div>
+        <div class="bg-white/10 p-4 rounded-lg flex items-center">
+            <i class="fas fa-trophy text-4xl text-yellow-400 mr-3"></i>
+            <div>
+                <p class="text-sm text-gray-400">Wettbewerb</p>
+                <p class="text-xl font-bold">{{ comp.name }}</p>
+                <p class="text-sm">{{ comp.ort }}, {{ comp.zeit.strftime('%d.%m.%Y') }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <form method="post">
+        <div class="overflow-x-auto bg-white/5 rounded-lg">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="border-b border-white/20">
+                        <th class="p-3 text-left">Runde</th>
+                        <th class="p-3 text-left">Platz</th>
+                        <th class="p-3 text-left">Gegner</th>
+                        <th class="p-3 text-left">Fische</th>
+                        <th class="p-3 text-left">Punkte</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for res in results %}
+                    <tr class="border-b border-white/10 hover:bg-white/5">
+                        <td class="p-3">{{ res.place.round.round_num }}</td>
+                        <td class="p-3">#{{ res.place.place_num }}</td>
+                        <td class="p-3">
+                            {% if res.place.left_user_id == user.id %}
+                                {{ res.place.right_user.full_name() if res.place.right_user else 'Frei' }}
+                            {% else %}
+                                {{ res.place.left_user.full_name() if res.place.left_user else 'Frei' }}
+                            {% endif %}
+                        </td>
+                        <td class="p-3">{{ res.fish_count }}</td>
+                        <td class="p-3">
+                            <input type="number" name="points_{{ res.id }}" value="{{ res.points_awarded }}" class="form-input w-20" min="0" max="3">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+            <button type="submit" class="btn btn-primary flex-1 py-3">
+                <i class="fas fa-save mr-2"></i>Speichern
+            </button>
+            <a href="{{ url_for('admin.manage_competition', comp_id=comp.id) }}" class="btn btn-outline flex-1 py-3 text-center">
+                <i class="fas fa-times mr-2"></i>Abbrechen
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

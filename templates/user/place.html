@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Platz {{ place.place_num }}{% endblock %}
+{% block content %}
+<div class="glass-card p-8 max-w-4xl mx-auto">
+    <h1 class="text-3xl mb-4 text-center">Platz {{ place.place_num }}</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Карточка текущего пользователя -->
+        <div class="glass-card p-6 text-center">
+            <img src="{{ url_for('static', filename='uploads/' + current_user.photo_path) }}" class="w-24 h-24 rounded-full mx-auto mb-2">
+            <h3 class="text-xl font-semibold">{{ current_user.full_name() }}</h3>
+            <p class="text-sm text-gray-300">(Du)</p>
+
+            {% if result.points_awarded == 0 %}
+                <form method="post" class="mt-4">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-4">
+                        <label class="block mb-1 text-left">Deine gefangenen Fische</label>
+                        {{ form.fish_count(class="form-input", placeholder="z.B. 3") }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="block mb-1 text-left">Fische des Gegners (geschätzt)</label>
+                        {{ form.opponent_fish(class="form-input", placeholder="z.B. 2") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Speichern</button>
+                </form>
+            {% else %}
+                <div class="mt-4 p-3 bg-green-500/20 rounded">
+                    <p class="font-semibold text-green-300">Ergebnisse bestätigt</p>
+                    <p>Deine Fische: {{ result.self_claim }}</p>
+                    <p>Gegner (Schätzung): {{ result.opponent_claim }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Карточка соперника -->
+        <div class="glass-card p-6 text-center">
+            <img src="{{ url_for('static', filename='uploads/' + (opponent.photo_path if opponent else 'default_avatar.png')) }}" class="w-24 h-24 rounded-full mx-auto mb-2">
+            <h3 class="text-xl font-semibold">{{ opponent.full_name() if opponent else '?' }}</h3>
+            <p class="text-sm text-gray-300">(Gegner)</p>
+
+            <div class="mt-4">
+                {% if opponent %}
+                    {% set opp_result = results.get(opponent.id) %}
+                    {% if opp_result %}
+                        <p><strong>Status:</strong> 
+                            {% if opp_result.points_awarded > 0 %}
+                                <span class="text-green-400">Bestätigt ✓ ({{ opp_result.self_claim }} Fische)</span>
+                            {% elif opp_result.confirmed %}
+                                <span class="text-yellow-400">Hat bestätigt</span>
+                            {% else %}
+                                <span class="text-red-400">Noch nicht bestätigt</span>
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <p class="text-red-400">Keine Eingabe</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-red-400">Platz frei</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Ваши текущие введённые данные -->
+    {% if result %}
+    <div class="mt-6 glass-card p-4">
+        <h3 class="text-xl mb-2">Deine aktuellen Angaben</h3>
+        <p><strong>Deine Fische:</strong> {{ result.self_claim }}</p>
+        <p><strong>Fische des Gegners (deine Schätzung):</strong> {{ result.opponent_claim }}</p>
+        <p><strong>Status:</strong> 
+            {% if result.points_awarded > 0 %}
+                <span class="text-green-400">Punkte erhalten: {{ result.points_awarded }}</span>
+            {% elif result.confirmed %}
+                <span class="text-green-400">Bestätigt ✓ (warte auf Gegner)</span>
+            {% else %}
+                <span class="text-yellow-400">Nicht bestätigt</span>
+            {% endif %}
+        </p>
+        {% if result.points_awarded == 0 and not result.confirmed %}
+        <div class="mt-2">
+            <a href="{{ url_for('user.confirm_result', place_id=place.id) }}" class="btn btn-secondary">Bestätigen</a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

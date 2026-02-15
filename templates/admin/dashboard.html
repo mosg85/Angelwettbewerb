@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8">
+    <h1 class="text-2xl sm:text-3xl mb-4">Admin Dashboard</h1>
+    <p class="mb-4">Registrierte Benutzer: <span class="font-bold text-yellow-300">{{ users_count }}</span></p>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('admin.new_competition') }}" class="btn btn-primary inline-flex items-center">
+            <i class="fas fa-plus-circle mr-2"></i> Neuen Wettbewerb erstellen
+        </a>
+    </div>
+<div class="mt-4">
+    <a href="{{ url_for('admin.social_links') }}" class="btn btn-secondary inline-flex items-center">
+        <i class="fas fa-share-alt mr-2"></i> Social Media Links verwalten
+    </a>
+</div>    
+    <h2 class="text-xl sm:text-2xl mt-8 mb-4">Wettbewerbe</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for comp in competitions %}
+        <div class="glass-card p-4 hover:bg-white/20 transition-all">
+            <h3 class="text-lg font-semibold mb-2">{{ comp.name }}</h3>
+            <div class="text-sm space-y-1 mb-3">
+                <p><i class="fas fa-tag mr-2 text-blue-300"></i>Status: 
+                    <span class="px-2 py-1 rounded text-xs 
+                        {% if comp.status == 'created' %}bg-yellow-500/30 text-yellow-200
+                        {% elif comp.status == 'started' %}bg-green-500/30 text-green-200
+                        {% elif comp.status == 'ongoing' %}bg-blue-500/30 text-blue-200
+                        {% else %}bg-gray-500/30 text-gray-200{% endif %}">
+                        {{ comp.status }}
+                    </span>
+                </p>
+                <p><i class="fas fa-users mr-2 text-green-300"></i>Teilnehmer: {{ comp.participants.count() }}/{{ comp.max_teilnehmer }}</p>
+            </div>
+            <a href="{{ url_for('admin.manage_competition', comp_id=comp.id) }}" 
+               class="btn btn-secondary inline-flex items-center w-full justify-center">
+                <i class="fas fa-cog mr-2"></i> Verwalten
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8">
+    <h1 class="text-2xl sm:text-3xl mb-4">Mein Dashboard</h1>
+    <p class="mb-6">Willkommen, <span class="font-bold text-yellow-300">{{ current_user.vorname }}</span>!</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for comp in competitions %}
+        <div class="glass-card p-4 hover:bg-white/20 transition-all">
+            <h3 class="text-lg font-semibold mb-2">{{ comp.name }}</h3>
+            <div class="text-sm space-y-1 mb-3">
+                <p><i class="far fa-calendar-alt mr-2 text-blue-300"></i>{{ comp.zeit.strftime('%d.%m.%Y %H:%M') }}</p>
+                <p><i class="fas fa-map-marker-alt mr-2 text-red-300"></i>{{ comp.ort }}</p>
+                <p><i class="fas fa-users mr-2 text-green-300"></i>Teilnehmer: {{ comp.participants.count() }}/{{ comp.max_teilnehmer }}</p>
+                <p><i class="fas fa-tag mr-2 text-purple-300"></i>Status: 
+                    <span class="px-2 py-1 rounded text-xs 
+                        {% if comp.status == 'created' %}bg-yellow-500/30 text-yellow-200
+                        {% elif comp.status == 'started' %}bg-green-500/30 text-green-200
+                        {% elif comp.status == 'ongoing' %}bg-blue-500/30 text-blue-200
+                        {% else %}bg-gray-500/30 text-gray-200{% endif %}">
+                        {{ comp.status }}
+                    </span>
+                </p>
+            </div>
+            
+            {% if comp.id in participated_ids %}
+                {% if comp.status == 'created' %}
+                    <a href="{{ url_for('user.leave_competition', comp_id=comp.id) }}" 
+                       class="btn btn-danger inline-flex items-center w-full justify-center"
+                       onclick="return confirm('Wirklich vom Wettbewerb abmelden?')">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Abmelden
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('user.view_competition', comp_id=comp.id) }}" 
+                       class="btn btn-primary inline-flex items-center w-full justify-center">
+                        <i class="fas fa-eye mr-2"></i> Zum Wettbewerb
+                    </a>
+                {% endif %}
+            {% else %}
+                {% if comp.status == 'created' and comp.participants.count() < comp.max_teilnehmer %}
+                    <a href="{{ url_for('user.join_competition', comp_id=comp.id) }}" 
+                       class="btn btn-primary inline-flex items-center w-full justify-center">
+                        <i class="fas fa-user-plus mr-2"></i> Teilnehmen
+                    </a>
+                {% else %}
+                    <span class="text-gray-400 text-sm block text-center">
+                        <i class="fas fa-ban mr-1"></i> Nicht verfügbar
+                    </span>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

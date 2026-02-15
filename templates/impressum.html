@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Impressum & Kontakt{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8 max-w-3xl mx-auto">
+    <!-- Überschrift -->
+    <div class="flex items-center mb-6">
+        <i class="fas fa-balance-scale text-3xl text-yellow-400 mr-3"></i>
+        <h1 class="text-2xl sm:text-3xl font-bold">Impressum & Kontakt</h1>
+    </div>
+
+    <!-- Zwei Spalten: Impressum (links) + Rechtliches (rechts) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Linke Spalte: Impressum -->
+        <div class="bg-white/5 p-6 rounded-lg">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-gavel text-purple-400 mr-2"></i>
+                Angaben gemäß §5 DDG
+            </h2>
+            <div class="space-y-4">
+                <div>
+                    <p class="text-sm text-gray-400">Name und Anschrift</p>
+                    <p class="font-semibold">Max Mustermann<br>Musterstraße 1<br>12345 Musterstadt<br>Deutschland</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400">Vertreten durch</p>
+                    <p class="font-semibold">Max Mustermann (Inhaber)</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400">Kontakt</p>
+                    <p class="flex items-center"><i class="fas fa-phone text-green-400 w-5 mr-2"></i>+49 123 456789</p>
+                    <p class="flex items-center"><i class="fas fa-envelope text-yellow-400 w-5 mr-2"></i>info@angelwettbewerb.de</p>
+                    <p class="flex items-center"><i class="fas fa-globe text-blue-400 w-5 mr-2"></i>www.angelwettbewerb.de</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400">Umsatzsteuer-ID</p>
+                    <p class="font-semibold">DE 123456789</p>
+                    <p class="text-xs text-gray-400 mt-1">gemäß §27a Umsatzsteuergesetz</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rechte Spalte: Rechtliche Hinweise -->
+        <div class="space-y-4">
+            <div class="bg-white/5 p-6 rounded-lg">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-newspaper text-blue-400 mr-2"></i>
+                    Inhaltlich Verantwortlicher §18 MStV
+                </h2>
+                <p class="font-semibold">Max Mustermann</p>
+                <p class="text-sm">Musterstraße 1, 12345 Musterstadt</p>
+            </div>
+            <div class="bg-white/5 p-6 rounded-lg">
+                <h2 class="text-xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+                    Haftungshinweise
+                </h2>
+                <div class="space-y-3 text-sm">
+                    <p><strong>Haftung für Inhalte</strong><br>Als Diensteanbieter sind wir gemäß §7 Abs.1 DDG für eigene Inhalte verantwortlich. Nach §§8-10 DDG sind wir nicht verpflichtet, fremde Informationen zu überwachen.</p>
+                    <p><strong>Haftung für Links</strong><br>Für externe Links übernehmen wir keine Haftung; für die Inhalte sind die jeweiligen Betreiber verantwortlich.</p>
+                    <p><strong>Urheberrecht</strong><br>Die erstellten Inhalte unterliegen dem deutschen Urheberrecht.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KONTAKTFORMULAR – jetzt mit sichtbaren Feldern -->
+    <div class="mt-8 bg-white/5 p-6 rounded-lg">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+            <i class="fas fa-paper-plane text-green-400 mr-2"></i>
+            Nachricht senden
+        </h2>
+        <form method="post" action="{{ url_for('main.send_message') }}" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Dein Name *</label>
+                    <input type="text" name="name" required class="form-input w-full" placeholder="Max Mustermann">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Deine E-Mail *</label>
+                    <input type="email" name="email" required class="form-input w-full" placeholder="max@example.com">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Betreff (optional)</label>
+                <input type="text" name="subject" class="form-input w-full" placeholder="Frage zum Wettbewerb">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Nachricht *</label>
+                <textarea name="message" rows="4" required class="form-input w-full" placeholder="Deine Nachricht..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-envelope mr-2"></i>Nachricht senden
+            </button>
+        </form>
+    </div>
+
+    <p class="text-xs text-gray-400 mt-4 text-center">
+        <i class="fas fa-lock mr-1"></i>SSL-verschlüsselte Übertragung
+    </p>
+</div>
+{% endblock %}

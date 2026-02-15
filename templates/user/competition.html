@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ comp.name }}{% endblock %}
+{% block content %}
+<div class="glass-card p-8">
+    <h1 class="text-3xl mb-4">{{ comp.name }}</h1>
+    <p><strong>Ort:</strong> {{ comp.ort }}</p>
+    <p><strong>Zeit:</strong> {{ comp.zeit.strftime('%d.%m.%Y %H:%M') }}</p>
+    <p><strong>Status:</strong> {{ comp.status }}</p>
+
+    <!-- Детали события (как у админа) -->
+    <div class="mt-4 p-4 bg-white/10 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="flex items-start">
+            <i class="fas fa-calendar-alt text-blue-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Zeit:</span> {{ comp.zeit.strftime('%d.%m.%Y %H:%M') if comp.zeit else 'nicht angegeben' }}</div>
+        </div>
+        <div class="flex items-start">
+            <i class="fas fa-map-marker-alt text-red-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Ort:</span> {{ comp.ort }}</div>
+        </div>
+        <div class="flex items-start">
+            <i class="fas fa-chair text-green-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Plätze:</span> {{ comp.plaetze }}</div>
+        </div>
+        <div class="flex items-start">
+            <i class="fas fa-users text-yellow-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Max. Teilnehmer:</span> {{ comp.max_teilnehmer }}</div>
+        </div>
+        {% if comp.beschreibung %}
+        <div class="flex items-start md:col-span-2">
+            <i class="fas fa-align-left text-purple-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Beschreibung:</span> {{ comp.beschreibung }}</div>
+        </div>
+        {% endif %}
+        {% if comp.regeln %}
+        <div class="flex items-start md:col-span-2">
+            <i class="fas fa-gavel text-orange-300 mr-2 mt-1"></i>
+            <div><span class="font-semibold">Regeln:</span> {{ comp.regeln }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Кнопки с иконками (вертикально, как у админа) -->
+    <div class="mt-6 flex flex-col space-y-3 items-start">
+        <a href="{{ url_for('user.lake_view', comp_id=comp.id) }}" class="btn btn-secondary">
+            <i class="fas fa-map mr-2"></i> Gesamtansicht
+        </a>
+        <a href="{{ url_for('user.scoreboard', comp_id=comp.id) }}" class="btn btn-primary">
+            <i class="fas fa-trophy mr-2"></i> Rangliste anzeigen
+        </a>
+        {% if place %}
+        <a href="{{ url_for('user.enter_place', place_id=place.id) }}" class="btn btn-primary">
+            <i class="fas fa-fish mr-2"></i> Platz betreten
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Информация о текущей раунде и месте -->
+    {% if round %}
+        <p class="mt-4"><strong>Aktuelle Runde:</strong> {{ round.round_num }}</p>
+        {% if place %}
+            <p>Dein Platz: #{{ place.place_num }}</p>
+        {% else %}
+            <p>Du bist in dieser Runde keinem Platz zugeordnet.</p>
+        {% endif %}
+    {% else %}
+        <p class="mt-4">Der Wettbewerb hat noch nicht begonnen.</p>
+    {% endif %}
+</div>
+{% endblock %}

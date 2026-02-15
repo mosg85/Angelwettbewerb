@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Anmelden{% endblock %}
+{% block content %}
+<div class="glass-card p-4 sm:p-8 max-w-md mx-auto">
+    <h2 class="text-xl sm:text-2xl mb-4 text-center font-bold">Anmelden</h2>
+    <form method="post" class="space-y-3">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.email.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.email(class="form-input w-full", placeholder="deine@email.de") }}
+        </div>
+        <div>
+            {{ form.password.label(class="block mb-1 text-sm sm:text-base font-semibold") }}
+            {{ form.password(class="form-input w-full", placeholder="••••••••") }}
+        </div>
+        <div class="flex items-center mb-4">
+            {{ form.admin_mode(class="mr-2 w-4 h-4") }}
+            {{ form.admin_mode.label(class="text-sm sm:text-base") }}
+        </div>
+        {{ form.submit(class="btn btn-primary w-full py-3 font-bold") }}
+    </form>
+    <p class="text-center mt-4 text-sm">
+        Noch kein Konto? 
+        <a href="{{ url_for('auth.register') }}" class="text-yellow-300 hover:underline font-semibold">Registrieren</a>
+    </p>
+</div>
+{% endblock %}

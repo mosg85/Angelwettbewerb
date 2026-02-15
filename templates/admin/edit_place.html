@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Platz {{ place.place_num }} bearbeiten{% endblock %}
+{% block content %}
+<div class="glass-card p-8 max-w-2xl mx-auto">
+    <h1 class="text-3xl mb-4">Platz {{ place.place_num }} – Ergebnisse bearbeiten</h1>
+    <p class="mb-4">Wettbewerb: {{ comp.name }}, Runde {{ place.round.round_num }}</p>
+    <a href="{{ url_for('admin.lake_view', comp_id=comp.id) }}" class="btn btn-secondary mb-4">← Zurück zum See</a>
+
+    <form method="post">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="glass-card p-4">
+                <h3 class="text-xl mb-2">{{ place.left_user.full_name() if place.left_user else 'Frei' }}</h3>
+                {% if place.left_user %}
+                    {% set left_result = results[place.left_user.id] if results else None %}
+                    <div class="mb-2">
+                        <label class="block mb-1">Anzahl Fische:</label>
+                        <input type="number" name="left_fish" value="{{ left_result.fish_count if left_result else 0 }}" class="form-input">
+                    </div>
+                    <div class="mb-2">
+                        <label class="block mb-1">Punkte:</label>
+                        <input type="number" name="left_points" value="{{ left_result.points_awarded if left_result else 0 }}" class="form-input">
+                    </div>
+                    <div class="mb-2">
+                        <label>
+                            <input type="checkbox" name="left_confirmed" {% if left_result and left_result.confirmed %}checked{% endif %}>
+                            Bestätigt
+                        </label>
+                    </div>
+                {% else %}
+                    <p class="text-gray-400">Platz frei</p>
+                {% endif %}
+            </div>
+            <div class="glass-card p-4">
+                <h3 class="text-xl mb-2">{{ place.right_user.full_name() if place.right_user else 'Frei' }}</h3>
+                {% if place.right_user %}
+                    {% set right_result = results[place.right_user.id] if results else None %}
+                    <div class="mb-2">
+                        <label class="block mb-1">Anzahl Fische:</label>
+                        <input type="number" name="right_fish" value="{{ right_result.fish_count if right_result else 0 }}" class="form-input">
+                    </div>
+                    <div class="mb-2">
+                        <label class="block mb-1">Punkte:</label>
+                        <input type="number" name="right_points" value="{{ right_result.points_awarded if right_result else 0 }}" class="form-input">
+                    </div>
+                    <div class="mb-2">
+                        <label>
+                            <input type="checkbox" name="right_confirmed" {% if right_result and right_result.confirmed %}checked{% endif %}>
+                            Bestätigt
+                        </label>
+                    </div>
+                {% else %}
+                    <p class="text-gray-400">Platz frei</p>
+                {% endif %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Speichern</button>
+    </form>
+</div>
+{% endblock %}

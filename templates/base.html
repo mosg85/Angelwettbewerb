@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Angelwettbewerb - {% block title %}Willkommen{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(145deg, #0b3d5f 0%, #1b7a9e 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .glass-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        /* EXPLIZITE BUTTON-FARBEN MIT !IMPORTANT FÜR HUAWEI/HONOR */
+        .btn {
+            display: inline-block !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 9999px !important;
+            font-weight: 600 !important;
+            transition: all 0.2s !important;
+            text-decoration: none !important;
+            border: none !important;
+            cursor: pointer !important;
+        }
+        .btn-primary {
+            background-color: #eab308 !important; /* gelb */
+            color: #111827 !important; /* fast schwarz */
+        }
+        .btn-primary:hover {
+            background-color: #facc15 !important;
+            transform: scale(1.05) !important;
+        }
+        .btn-secondary {
+            background-color: #2563eb !important; /* blau */
+            color: #ffffff !important;
+        }
+        .btn-secondary:hover {
+            background-color: #3b82f6 !important;
+            transform: scale(1.05) !important;
+        }
+        .btn-danger {
+            background-color: #dc2626 !important; /* rot */
+            color: #ffffff !important;
+        }
+        .btn-danger:hover {
+            background-color: #ef4444 !important;
+            transform: scale(1.05) !important;
+        }
+        .btn-outline {
+            background-color: transparent !important;
+            border: 2px solid #ffffff !important;
+            color: #ffffff !important;
+        }
+        .btn-outline:hover {
+            background-color: #ffffff !important;
+            color: #111827 !important;
+            transform: scale(1.05) !important;
+        }
+        .btn-success {
+            background-color: #16a34a !important; /* grün */
+            color: #ffffff !important;
+        }
+        .btn-success:hover {
+            background-color: #22c55e !important;
+            transform: scale(1.05) !important;
+        }
+        .form-input {
+            @apply w-full p-3 rounded-lg border border-gray-300 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400 outline-none;
+            background-color: white !important;
+            color: black !important;
+        }
+        /* Mobile-Optimierungen */
+        @media (max-width: 640px) {
+            .glass-card {
+                border-radius: 16px;
+                padding: 1rem !important;
+            }
+            .btn {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+        }
+        /* Cookie-Banner Styles */
+        #cookie-banner {
+            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.9);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        /* Huawei/Honor Spezial-Fix */
+        a, button {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <nav class="p-4 flex flex-wrap justify-between items-center gap-2">
+        <a href="/" class="text-xl sm:text-2xl font-bold flex items-center">
+            <i class="fas fa-fish mr-2 text-yellow-400"></i>
+            <span class="hidden xs:inline">Angelwettbewerb</span>
+        </a>
+        <div class="flex flex-wrap gap-2 items-center">
+            {% if current_user.is_authenticated %}
+                <span class="text-sm sm:text-base">Hallo, {{ current_user.vorname }}</span>
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary text-xs sm:text-sm">
+                        <i class="fas fa-cog mr-1"></i>Admin
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary text-xs sm:text-sm">
+                        <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                    </a>
+                {% endif %}
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-danger text-xs sm:text-sm">
+                    <i class="fas fa-sign-out-alt mr-1"></i>Abmelden
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline text-xs sm:text-sm">
+                    <i class="fas fa-sign-in-alt mr-1"></i>Anmelden
+                </a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary text-xs sm:text-sm">
+                    <i class="fas fa-user-plus mr-1"></i>Registrieren
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="glass-card p-4 mb-4 {% if category == 'danger' %}bg-red-500/30{% elif category == 'success' %}bg-green-500/30{% else %}bg-blue-500/30{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Impressum/Kontakt + Social Media Footer -->
+    <footer class="mt-12 border-t border-white/20 pt-8 pb-6">
+        <div class="container mx-auto px-4">
+            <!-- Impressum Button (vor den Icons, zentriert) -->
+            <div class="flex justify-center mb-8">
+                <a href="{{ url_for('main.impressum') }}" class="btn btn-outline px-8 py-3">
+                    <i class="fas fa-balance-scale mr-2"></i>Impressum & Kontakt
+                </a>
+            </div>
+
+            <!-- Social Media Icons (mit mehr Abstand) -->
+            <div class="flex flex-wrap justify-center gap-6 sm:gap-8 mb-6">
+                {% set links = get_social_links() %}
+                {% for link in links %}
+                    {% if link.active %}
+                        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" 
+                           class="transform hover:scale-110 transition-transform duration-200">
+                            {% if link.platform == 'instagram' %}
+                                <i class="fab fa-instagram text-3xl sm:text-4xl text-pink-400 hover:text-pink-300"></i>
+                            {% elif link.platform == 'tiktok' %}
+                                <i class="fab fa-tiktok text-3xl sm:text-4xl text-white hover:text-gray-300"></i>
+                            {% elif link.platform == 'youtube' %}
+                                <i class="fab fa-youtube text-3xl sm:text-4xl text-red-500 hover:text-red-400"></i>
+                            {% elif link.platform == 'facebook' %}
+                                <i class="fab fa-facebook text-3xl sm:text-4xl text-blue-600 hover:text-blue-500"></i>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Copyright und SSL-Hinweis -->
+            <p class="text-xs sm:text-sm text-gray-400 text-center">
+                © 2026 Angelwettbewerb. Alle Rechte vorbehalten.<br>
+                <span class="text-xs text-gray-500"><i class="fas fa-lock mr-1"></i>SSL-verschlüsselte Übertragung</span>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
