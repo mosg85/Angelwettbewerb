@@ -2,17 +2,11 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from extensions import db, login_manager
 from flask_migrate import Migrate
 from flask_mail import Mail
 from config import Config
 
-db = SQLAlchemy()
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
-login_manager.login_message = 'Bitte melde dich an, um diese Seite zu sehen.'
-login_manager.login_message_category = 'info'
 mail = Mail()
 migrate = Migrate()
 
@@ -25,9 +19,13 @@ def create_app(config_class=Config):
     mail.init_app(app)
     migrate.init_app(app, db)
 
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Bitte melde dich an, um diese Seite zu sehen.'
+    login_manager.login_message_category = 'info'
+
+    from models import User
     @login_manager.user_loader
     def load_user(user_id):
-        from models import User
         return User.query.get(int(user_id))
 
     if not app.debug:
@@ -47,17 +45,20 @@ def create_app(config_class=Config):
     from routes.user import user_bp
     from routes.admin import admin_bp
     from routes.competition import comp_bp
+
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(comp_bp)
 
-    # Context Processor für Social Links - hier wird die Funktion definiert
     @app.context_processor
     def utility_processor():
-        from utils.context_processors import get_social_links
-        return dict(get_social_links=get_social_links)
+        try:
+            from utils.context_processors import get_social_links
+            return dict(get_social_links=get_social_links)
+        except:
+            return dict(get_social_links=lambda: [])
 
     @app.errorhandler(404)
     def not_found_error(error):
@@ -71,3 +72,12 @@ def create_app(config_class=Config):
     return app
 
 app = create_app()
+
+# Создаём таблицы базы данных, если их нет (для SQLite)
+with app.app_context():
+    from models import db
+    db.create_all()
+    print("✅ Таблицы БД проверены/созданы.")
+
+if __name__ == '__main__':
+    app.run()
