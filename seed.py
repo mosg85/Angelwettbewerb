@@ -13,7 +13,7 @@ with app.app_context():
             telefon='+4915112345678',
             email='admin@example.com',
             is_admin=True,
-            email_confirmed=True
+#            email_confirmed=True
         )
         admin.set_password('admin123')
         db.session.add(admin)
@@ -36,7 +36,7 @@ with app.app_context():
                 telefon=f'+49176{i:07d}',
                 email=email,
                 is_admin=False,
-                email_confirmed=True
+ #               email_confirmed=True
             )
             user.set_password('user123')
             db.session.add(user)
