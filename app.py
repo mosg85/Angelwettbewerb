@@ -73,11 +73,14 @@ def create_app(config_class=Config):
 
 app = create_app()
 
-# Создаём таблицы базы данных, если их нет (для SQLite)
 with app.app_context():
-    from models import db
+    from models import db, User
     db.create_all()
     print("✅ Таблицы БД проверены/созданы.")
+    if User.query.count() == 0:
+        from seed import seed_data
+        seed_data()
+        print("✅ Seed-Daten eingefügt.")
 
 if __name__ == '__main__':
     app.run()
