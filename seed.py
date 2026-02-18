@@ -2,6 +2,7 @@ from app import create_app, db
 from models import User, Competition, Participant
 from datetime import datetime, timedelta
 import random
+from werkzeug.security import generate_password_hash
 
 app = create_app()
 with app.app_context():
@@ -12,10 +13,9 @@ with app.app_context():
             nachname='User',
             telefon='+4915112345678',
             email='admin@example.com',
-            is_admin=True,
-#            email_confirmed=True
+            is_admin=True
         )
-        admin.set_password('admin123')
+        admin.password = generate_password_hash('admin123')
         db.session.add(admin)
 
     names = [
@@ -35,10 +35,9 @@ with app.app_context():
                 nachname=nachname,
                 telefon=f'+49176{i:07d}',
                 email=email,
-                is_admin=False,
- #               email_confirmed=True
+                is_admin=False
             )
-            user.set_password('user123')
+            user.password = generate_password_hash('user123')
             db.session.add(user)
 
     db.session.commit()
@@ -51,17 +50,8 @@ with app.app_context():
             ort='See am Wald',
             plaetze=10,
             max_teilnehmer=20,
-            beschreibung='Ein spannendes Angelturnier für alle.',
+            beschreibung='Ein spannendes Angelturnier für alle Angelfreunde!',
             regeln='Jeder angelt fair!',
-            status='created'
         )
         db.session.add(comp)
         db.session.commit()
-
-        users = User.query.filter_by(is_admin=False).all()
-        for user in users:
-            participant = Participant(user_id=user.id, comp_id=comp.id)
-            db.session.add(participant)
-        db.session.commit()
-
-    print("Datenbank initialisiert und mit Testdaten befüllt.")
